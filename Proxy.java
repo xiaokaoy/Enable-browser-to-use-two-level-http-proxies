@@ -27,7 +27,7 @@ The CONNECT request might consist of several lines, including "CONNECT....", "Ho
 ending with a blank line.
    Note: I chose these lines and sent them to C just because after intercepting and analyzing
 some packets to and from C, I found my browser would send these kinds of lines if it connected directly to C.
-So I'm not sure this is always acceptable to a proxy.
+So I'm not sure if this is always acceptable to a proxy.
 
 When C is connected to D successfully, it will send an http response to B, which normally is just one LINE of text:
 "HTTP/1.0 200 CONNECTION established\r\n\r\n"
