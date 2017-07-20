@@ -3,15 +3,15 @@
 
 1. What made me develop this program?
 That's just because I wanted to be able to access Google and some other websites which are blocked in China. 
-While a friend of mine told me a HTTP proxy (IP + port) on the Internet, I couldn't use it from my office computer 
-because my office computer (and all my colleagues' computers) had to connect to a HTTP proxy provided by my company first to 
+While a friend of mine told me an HTTP proxy (IP + port) on the Internet, I couldn't use it from my office computer 
+because my office computer (and all my colleagues' computers) had to connect to an HTTP proxy provided by my company first to 
 connect to the Internet. It seemed that I needed to specify TWO proxies in Internet Options of my browser. But that was impossible,
 which made me decide to write this Java program.
 
 2. How does program work?
 In a nutshell,  it is just to tell the proxy at my company to connect to the proxy provided by my friend.
 
-The following figure illustrates how my browser connects to a HTTP server like Google
+The following figure illustrates how my browser connects to an HTTP server like Google
  (The figure is a bit too wide. you may need to drag the horizonal scroll bar on the bottom to see more):
 
 my browser <---> this Java program <----> proxy at my company (Parent Proxy) <----> proxy on the Internet provided by my friend (Grandparent Proxy) <---> Google/Twitter/Youtube...
@@ -28,7 +28,7 @@ The CONNECT request might consist of several lines, including "CONNECT....", "Ho
 some packets to and from C, I found my browser would send these kinds of lines if it connected directly to C.
 So I'm not sure this is always acceptable to a proxy.
 
-When C is connected to D successfully, it will send a http response to B, which normally is just one LINE of text: "HTTP/1.0 200 CONNECTION established\r\n\r\n"
+When C is connected to D successfully, it will send an http response to B, which normally is just one LINE of text: "HTTP/1.0 200 CONNECTION established\r\n\r\n"
 I don't know why C says HTTP 1.0 rather than HTTP 1.1 in response. No need to worry. It seems to work as well.
   Note: This program doesn't check the content of the http response to the CONNECT request. I'm rather lazy.
 
@@ -39,6 +39,25 @@ responsible for different tasks:
 (2) DownstreamThread receives some bytes from C, and then sends them to A. This will repeat forever until no more data is available or some error ocurrs.
 Actually, C will work the same way as B at the same time, just forwarding the TCP streams between B and D.
 
+An example might help you understand the foregoing procedure better:
+Whenever the browser tries to access https://www.google.com, the following actions will happen:
+(1) A connects to B on 127.0.0.1:4444
+(2) B connects to C
+(3) B sends "CONNECT ...." request to C, asking C to connect to D
+(4) C connects to D
+(5) C sends "HTTP/1.0 200 CONNECTION established\r\n\r\n" to B as an HTTP response to the above-mentioned CONNECT request.
+(6) A sends "CONNECT www.google.com:443 HTTP/1.1..." request to B. 
+    Note: Actually this may happen anytime after Step 1. However, it doesn't matter, because this request will be stored in the recv
+    buffer of B for the TCP connectioin between A and B until B retrieves it.
+(7) B forwards the request to C, without having to analyzing it.
+(8) C forwards the request to D, without having to analyzing it.
+(9) D needs to analyze "CONNECT www.google.com:443 HTTP/1.1...", and then connects to www.google.com:443. 
+    (It may need to use DNS to get the IP of www.google.com first)
+(10) D replies to C that it has connected to Google successfully, saying "...CONNECTION established..."
+(11) C forwards the response to B, without having to analyzing it.
+(12) B forwards the response to A, without having to analyzing it.
+(13) A reads "...CONNECTION established...", and then talks to www.google.com about establishing TLS or whatever. All the data between them
+     will be forwarded by B, C and D without having to be analyzed by them.
 */
 
 
