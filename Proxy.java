@@ -8,8 +8,10 @@ because my office computer (and all my colleagues' computers) had to connect to 
 connect to the Internet. It seemed that I needed to specify TWO proxies in Internet Options of my browser. But that was impossible,
 which made me decide to write this Java program.
 
-2. How does program work?
-In a nutshell,  it is just to tell the proxy at my company to connect to the proxy provided by my friend.
+2. How does this program work?
+To put it in a nutshell,  this program always sends a CONNECT http request to the proxy at my company, telling it to 
+connect to the proxy provided by my friend, before forwarding the http requests it has received from the browser to the company's proxy.
+This enables all the HTTP reqeusts from the browser to be eventually transferred to the proxy my friend told me.
 
 The following figure illustrates how my browser connects to an HTTP server like Google
  (The figure is a bit too wide. you may need to drag the horizonal scroll bar on the bottom to see more):
