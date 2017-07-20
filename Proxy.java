@@ -23,24 +23,29 @@ On Internet Options of my Windows, set 127.0.0.1:4444 as LAN proxy of my compute
 
 Each time B accpets a TCP connection from A, it will create a new thread, called UpstreamThread.
 In the new thread, B will establish a TCP to C and then send a CONNECT (not GET or POST) http request to C, asking C to connect to D.
-The CONNECT request might consist of several lines, including "CONNECT....", "Host....", "Proxy-Connection....", and "User-Agent...", ending with a blank line.
+The CONNECT request might consist of several lines, including "CONNECT....", "Host....", "Proxy-Connection....", and "User-Agent...", 
+ending with a blank line.
    Note: I chose these lines and sent them to C just because after intercepting and analyzing
 some packets to and from C, I found my browser would send these kinds of lines if it connected directly to C.
 So I'm not sure this is always acceptable to a proxy.
 
-When C is connected to D successfully, it will send an http response to B, which normally is just one LINE of text: "HTTP/1.0 200 CONNECTION established\r\n\r\n"
+When C is connected to D successfully, it will send an http response to B, which normally is just one LINE of text:
+"HTTP/1.0 200 CONNECTION established\r\n\r\n"
 I don't know why C says HTTP 1.0 rather than HTTP 1.1 in response. No need to worry. It seems to work as well.
   Note: This program doesn't check the content of the http response to the CONNECT request. I'm rather lazy.
 
-After that, what B needs to do is just forward whatever it receives from A to C and forward whatever it receives from C to A, without having to analyzing the TCP data.
-To prevent the streams in the two directions from blocking each other, a new thread is created, called DownstreamThread. As you would expect, the two threads are
-responsible for different tasks:
-(1) UpstreamThread   receives some bytes from A, and then sends them to C. This will repeat forever until no more data is available or some error ocurrs.
-(2) DownstreamThread receives some bytes from C, and then sends them to A. This will repeat forever until no more data is available or some error ocurrs.
+After that, what B needs to do is just forward whatever it receives from A to C and forward whatever it receives from C to A, 
+without having to analyzing the TCP data.
+To prevent the streams in the two directions from blocking each other, a new thread is created, called DownstreamThread.
+As you would expect, the two threads are responsible for different tasks:
+(1) UpstreamThread   receives some bytes from A, and then sends them to C. 
+   This will repeat forever until no more data is available or some error ocurrs.
+(2) DownstreamThread receives some bytes from C, and then sends them to A. 
+   This will repeat forever until no more data is available or some error ocurrs.
 Actually, C will work the same way as B at the same time, just forwarding the TCP streams between B and D.
 
 An example might help you understand the foregoing procedure better:
-Whenever the browser tries to access https://www.google.com, the following actions will happen:
+When the browser tries to access https://www.google.com, the following actions will happen:
 (1) A connects to B on 127.0.0.1:4444
 (2) B connects to C
 (3) B sends "CONNECT ...." request to C, asking C to connect to D
