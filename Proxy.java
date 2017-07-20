@@ -12,7 +12,7 @@ which made me decide to write this Java program.
 In a nutshell,  it is just to tell the proxy at my company to connect to the proxy provided by my friend.
 
 The following figure illustrates how my browser connects to a HTTP server like Google
- (you may need to drag the horizonal scroll bar on the bottom to see more):
+ (The figure is a bit too wide. you may need to drag the horizonal scroll bar on the bottom to see more):
 
 my browser <---> this Java program <----> proxy at my company (Parent Proxy) <----> proxy on the Internet provided by my friend (Grandparent Proxy) <---> Google/Twitter/Youtube...
      A                    B                             C                                                             D                                             E		
