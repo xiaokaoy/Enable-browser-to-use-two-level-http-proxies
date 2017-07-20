@@ -11,13 +11,14 @@ which made me decide to write this Java program.
 2. How does program work?
 In a nutshell,  it is just to tell the proxy at my company to connect to the proxy provided by my friend.
 
-The following figure illustrates how my browser connects to a HTTP server like Google:
+The following figure illustrates how my browser connects to a HTTP server like Google
+ (you may need to drag the horizonal scroll bar on the bottom to see more):
 
 my browser <---> this Java program <----> proxy at my company (Parent Proxy) <----> proxy on the Internet provided by my friend (Grandparent Proxy) <---> Google/Twitter/Youtube...
      A                    B                             C                                                             D                                             E		
 
 
-B is listening on TCP port 4444 ( 4444 is a number that is hard for me to forget, isn't it? ).
+B is listening on TCP port 4444 ( 4444 is a number that is hard for you to forget, isn't it? ).
 On Internet Options of my Windows, set 127.0.0.1:4444 as LAN proxy of my computer.
 
 Each time B accpets a TCP connection from A, it will create a new thread, called UpstreamThread.
@@ -25,7 +26,7 @@ In the new thread, B will establish a TCP to C and then send a CONNECT (not GET 
 The CONNECT request might consist of several lines, including "CONNECT....", "Host....", "Proxy-Connection....", and "User-Agent...", ending with a blank line.
    Note: I chose these lines and sent them to C just because after intercepting and analyzing
 some packets to and from C, I found my browser would send these kinds of lines if it connected directly to C.
-So I'm not sure this is always accpetable by a proxy.
+So I'm not sure this is always acceptable to a proxy.
 
 When C is connected to D successfully, it will send a http response to B, which normally is just one LINE of text: "HTTP/1.0 200 CONNECTION established\r\n\r\n"
 I don't know why C says HTTP 1.0 rather than HTTP 1.1 in response. No need to worry. It seems to work as well.
@@ -36,7 +37,7 @@ To prevent the streams in the two directions from blocking each other, a new thr
 responsible for different tasks:
 (1) UpstreamThread   receives some bytes from A, and then sends them to C. This will repeat forever until no more data is available or some error ocurrs.
 (2) DownstreamThread receives some bytes from C, and then sends them to A. This will repeat forever until no more data is available or some error ocurrs.
-
+Actually, C will work the same way as B at the same time, just forwarding the TCP streams between B and D.
 
 */
 
