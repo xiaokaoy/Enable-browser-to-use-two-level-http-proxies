@@ -140,7 +140,6 @@ class UpstreamThread extends Thread {
 			browserIn = browserSocket.getInputStream();
 			byte[] bufReq = new byte[1024*8];
 			int readByte;
-			boolean first = true;
 			while ((readByte = browserIn.read(bufReq)) != -1) {
 				parentOut.write(bufReq, 0, readByte);
 			}
