@@ -1,4 +1,4 @@
-# two-level-proxy
+# how to enable your browser to use two-level http proxies
 
 What made me develop this program?
 That's just because I wanted to be able to access Google and some other websites which are blocked in China. 
